@@ -162,7 +162,7 @@
             Click="Launcher_Button_Click" Grid.ColumnSpan="2" />
         <Button
             x:Name="Patch_Button"
-            Content="Apply LeapC Patch"
+            Content="Apply Patch"
             Margin="1,121,0,0"
             VerticalAlignment="Top"
             Height="29"

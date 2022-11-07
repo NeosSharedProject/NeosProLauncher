@@ -153,7 +153,7 @@ namespace NeosProLauncher
             {
                 LogoRegular.Visibility = Visibility.Hidden;
             }
-            //MachineUUID = KeyVerification.GetHardwareUUID();
+            MachineUUID = KeyVerification.GetHardwareUUID();
             LicenseKey.Visibility = Visibility.Hidden;
             RegisterButton.Visibility = Visibility.Hidden;
             KeyLabel.Visibility = Visibility.Hidden;
@@ -356,111 +356,6 @@ namespace NeosProLauncher
                 }
                 File.Delete("Update.7z");
                 File.WriteAllText(VERSION_PATH, version.ToString());
-            }            //string branch = null;
-            if (File.Exists("Branch.conf"))
-            {
-                branch = File.ReadAllText("Branch.conf");
-            }
-            else
-            {
-                branch = "Public";
-            }
-            WebClient client = new WebClient();
-            string version = "";
-            try
-            {
-                string text = await client.DownloadStringTaskAsync("https://assets.neos.com/install/Pro/" + branch);
-                if (!string.IsNullOrEmpty(text)) version = text;
-            }
-            catch (Exception)
-            {
-            }
-            try
-            {
-                string text = await client.DownloadStringTaskAsync("https://cloudxstorage.blob.core.windows.net/install/Pro/" + branch);
-                if (!string.IsNullOrEmpty(text)) version = text;
-            }
-            catch (Exception)
-            {
-            }
-            if (string.IsNullOrEmpty(version))
-            {
-                MessageBox.Show("Branch Version cannot detect.");
-                Retry_Button.IsEnabled = true;
-                Retry_Button.Visibility = Visibility.Visible;
-                return;
-            }
-            string currentVersion = null;
-            if (File.Exists(VERSION_PATH))
-            {
-                currentVersion = File.ReadAllText(VERSION_PATH);
-            }
-            if (version != currentVersion)
-            {
-                updated = true;
-                if (File.Exists("Update.7z"))
-                {
-                    File.Delete("Update.7z");
-                }
-                StatusText.Content = "Downloading update...";
-                try
-                {
-                    client.DownloadProgressChanged += Client_DownloadProgressChanged;
-                    await client.DownloadFileTaskAsync("https://assets.neos.com/install/Pro/Data/" + version + ".7z", "Update.7z");
-                }
-                catch (Exception)
-                {
-                }
-                if (!File.Exists("Update.7z"))
-                {
-                    try
-                    {
-                        client.DownloadProgressChanged += Client_DownloadProgressChanged;
-                        await client.DownloadFileTaskAsync("https://cloudxstorage.blob.core.windows.net/install/Pro/Data/" + version + ".7z", "Update.7z");
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-                if (!File.Exists("Update.7z"))
-                {
-                    MessageBox.Show("Update file doesn't exist or missing. check network connection.");
-                    Retry_Button.IsEnabled = true;
-                    Retry_Button.Visibility = Visibility.Visible;
-                    return;
-                }
-                if (!File.Exists("7zr.exe") | !File.Exists("7za.exe"))
-                {
-                    StatusText.Content = "Downloading unpacker...";
-                    try
-                    {
-                        client.DownloadProgressChanged += Client_DownloadProgressChanged;
-                        await client.DownloadFileTaskAsync("https://7-zip.org/a/7zr.exe", "7zr.exe");
-                    }
-                    catch (Exception)
-                    {
-                    }
-                }
-                ProgressBar.IsIndeterminate = true;
-                StatusText.Content = "Installing update...";
-                try
-                {
-                    string FileName = "7zr.exe";
-                    if (File.Exists("7za.exe")) FileName = "7za.exe";
-                    if (File.Exists("7zr.exe")) FileName = "7zr.exe";
-                    await Process.Start(new ProcessStartInfo
-                    {
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                        FileName = FileName,
-                        Arguments = string.Format("x \"{0}\" -y -o\"{1}\"", "Update.7z", APP_PATH)
-                    }).WaitForExitAsync(default(CancellationToken));
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Failed to install!\n\n" + ex.ToString());
-                }
-                File.Delete("Update.7z");
-                File.WriteAllText(VERSION_PATH, version.ToString());
             }
             StatusText.Content = "Ready";
             LaunchVR_Button.IsEnabled = true;
@@ -470,6 +365,7 @@ namespace NeosProLauncher
             Logo.Opacity = 1.0;
             ProgressBar.Value = 0.0;
             ProgressBar.IsIndeterminate = false;
+            ProgressBar.Visibility = Visibility.Hidden;
             Patch_Button.Visibility = Visibility.Visible;
         }
 
@@ -576,6 +472,7 @@ namespace NeosProLauncher
         }
         private async void Apply_Patch(object sender, RoutedEventArgs e)
         {
+            ProgressBar.Visibility = Visibility.Visible;
             LaunchVR_Button.IsEnabled = false;
             LaunchMeta_Button.IsEnabled = false;
             LaunchScreen_Button.IsEnabled = false;
@@ -583,8 +480,11 @@ namespace NeosProLauncher
             Patch_Button.Visibility = Visibility.Hidden;
             await Install_Patch_LeapC();
             await Install_Patch_SRAnipal();
+            await Install_Patch_msdfgen();
+            await Install_Patch_bindings();
             ProgressBar.Value = 0.0;
             ProgressBar.IsIndeterminate = false;
+            ProgressBar.Visibility = Visibility.Hidden;
             LaunchVR_Button.IsEnabled = true;
             LaunchMeta_Button.IsEnabled = true;
             LaunchScreen_Button.IsEnabled = true;
@@ -606,9 +506,48 @@ namespace NeosProLauncher
             }
             MessageBox.Show("Patched successfully!");
         }
+        private async Task Install_Patch_msdfgen()
+        {
+            StatusText.Content = "Download&Install patch (msdfgen)...";
+            try
+            {
+                WebClient client = new WebClient();
+                client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                await client.DownloadFileTaskAsync("https://github.com/kazu0617/msdfgen-patch/raw/main/windows_x64/msdfgen.dll", APP_PATH + "/Neos_Data/Plugins/x86_64/msdfgen.dll");
+            }
+            catch (Exception)
+            {
+                MessageBox.Show("Patchfile seems missing, abort...");
+            }
+            MessageBox.Show("Patched successfully!");
+        }
+        private async Task Install_Patch_bindings()
+        {
+            StatusText.Content = "Download&Install patch (controller_bindings)...";
+            WebClient client = new WebClient();
+            try
+            {
+                client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                await client.DownloadFileTaskAsync("https://gist.github.com/kazu0617/41ffdce8f9c34e9c78755f3120bc8c0c/raw/af561218d9754a22e8062751cd811a1967af0d7f/bindings_knuckles.json", APP_PATH + "/Neos_Data/StreamingAssets/SteamVR/bindings_knuckles.json");
+            }
+            catch (Exception) { }
+            try
+            {
+                client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                await client.DownloadFileTaskAsync("https://gist.github.com/kazu0617/41ffdce8f9c34e9c78755f3120bc8c0c/raw/af561218d9754a22e8062751cd811a1967af0d7f/bindings_vive_controller.json", APP_PATH + "/Neos_Data/StreamingAssets/SteamVR/bindings_vive_controller.json");
+            }
+            catch (Exception) { }
+            try
+            {
+                client.DownloadProgressChanged += Client_DownloadProgressChanged;
+                await client.DownloadFileTaskAsync("https://gist.github.com/kazu0617/41ffdce8f9c34e9c78755f3120bc8c0c/raw/af561218d9754a22e8062751cd811a1967af0d7f/bindings_vive_cosmos_controller.json", APP_PATH + "/Neos_Data/StreamingAssets/SteamVR/bindings_vive_cosmos_controller.json");
+            }
+            catch (Exception) { }
+            MessageBox.Show("Patched successfully!");
+        }
         private async Task Install_Patch_SRAnipal()
         {
-/*            StatusText.Content = "Downloading patch (SRAnipalSDK)...";
+            StatusText.Content = "Downloading patch (SRAnipalSDK)...";
             try
             {
                 WebClient client = new WebClient();
@@ -620,10 +559,13 @@ namespace NeosProLauncher
                 MessageBox.Show("Patchfile seems missing, abort...");
             }
             StatusText.Content = "Installing patch (SRAnipalSDK)...";
+
+            //動かない
             ZipFile.ExtractToDirectory("SRAnipalSDK.zip", "Extract");
+
             Directory.Move("Extract/SDK/01_C/bin/",APP_PATH + "/Neos_Data/Plugins/x86_64/");
             MessageBox.Show("Patched successfully!");
-*/        }
+        }
 
         // Token: 0x04000002 RID: 2
         public const double VERIFICATION_TIME_PERIOD = 7.0;
