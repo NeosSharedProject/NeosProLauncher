@@ -1,0 +1,154 @@
+<Window
+	x:Class="NeosProLauncher.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:NeosProLauncher"
+	Title="Neos Pro Launcher"
+	Height="302.165"
+	Width="558.336"
+	ResizeMode="NoResize"
+	WindowStartupLocation="CenterScreen"
+	Icon="GraphicIcon - Cyan (Neos Classroom).png"
+	Closed="Window_Closed">
+    <Grid
+		Loaded="Grid_Loaded">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+				Width="313*" />
+            <ColumnDefinition
+				Width="182*" />
+            <ColumnDefinition
+				Width="58*" />
+        </Grid.ColumnDefinitions>
+        <Panel.Background>
+            <ImageBrush
+				x:Name="Background"
+				ImageSource="NeosAssets_BrandingAssets_01SteamPage_PageBackground.png"
+				Stretch="UniformToFill" />
+        </Panel.Background>
+        <ProgressBar
+			Name="ProgressBar"
+			HorizontalAlignment="Center"
+			Height="20"
+			Margin="10,0,10.333,10"
+			VerticalAlignment="Bottom"
+			Width="533"
+			Foreground="#FF0DB7ED"
+			Grid.ColumnSpan="3" />
+        <Label
+			Name="StatusText"
+			HorizontalContentAlignment="Center"
+			VerticalContentAlignment="Center"
+			HorizontalAlignment="Center"
+			Margin="9,200,10,35"
+			VerticalAlignment="Center"
+			FontSize="16"
+			Width="533"
+			Height="38"
+			Grid.ColumnSpan="3"
+			Foreground="#FFFFFFFF" Content="Loading..." />
+        <Button
+			Name="LaunchScreen_Button"
+			Content="Launch on Desktop"
+			Margin="0,160,0,0"
+			VerticalAlignment="Top"
+			Height="41"
+			FontSize="16"
+			HorizontalAlignment="Center"
+			Width="160"
+			Grid.Column="1"
+			Click="LaunchScreen_Button_Click" />
+        <Button
+			Name="LaunchVR_Button"
+			Content="Launch (Auto)"
+			HorizontalAlignment="Left"
+			Margin="10,160,0,0"
+			VerticalAlignment="Top"
+			Width="140"
+			Height="41"
+			FontSize="16"
+			Click="LaunchVR_Button_Click" />
+        <Button
+			Name="LaunchMeta_Button"
+			Content="Launch on Quest/Rift"
+			HorizontalAlignment="Center"
+			Margin="166,160,0,0"
+			VerticalAlignment="Top"
+			Width="146"
+			Height="41"
+			FontSize="14"
+			Click="Launcher_Button_Click" />
+        <Image
+			Name="Logo"
+			HorizontalAlignment="Left"
+			Height="137"
+			Margin="10,10,0,0"
+			VerticalAlignment="Top"
+			Width="533"
+			Source="LogoGraphicText - Cyan.png"
+			Grid.ColumnSpan="3" Visibility="Hidden" />
+        <Image
+			Name="LogoRegular"
+			Height="110"
+			Margin="0,0,0,130"
+			VerticalAlignment="Center"
+			Width="288"
+			Source="NeosAssets_LOGO_2021_Horizontal_FullColor.png"
+			StretchDirection="DownOnly"
+			UseLayoutRounding="True" HorizontalAlignment="Center" Grid.ColumnSpan="3" Panel.ZIndex="1" />
+        <TextBox
+			Name="LicenseKey"
+			HorizontalAlignment="Left"
+			Height="23"
+			Margin="46,129,0,0"
+			TextWrapping="Wrap"
+			VerticalAlignment="Top"
+			Width="268"
+			Grid.ColumnSpan="2" Visibility="Hidden" />
+        <Button
+			Name="RegisterButton"
+			Content="Register"
+			HorizontalAlignment="Left"
+			Margin="5.667,131,0,0"
+			VerticalAlignment="Top"
+			Width="75"
+			Grid.Column="1"
+			Click="RegisterButton_Click" Visibility="Hidden" />
+        <Label
+			Name="KeyLabel"
+			Content="Key:"
+			HorizontalAlignment="Left"
+			Margin="10,126,0,0"
+			VerticalAlignment="Top"
+			Foreground="#FFFFFFFF" Visibility="Hidden" />
+        <RadioButton
+			Name="OptionNeosVR"
+			Content="Neos VR"
+			HorizontalAlignment="Left"
+			Margin="202,157,0,0"
+			VerticalAlignment="Top"
+			FontSize="16"
+			Grid.ColumnSpan="2"
+			Width="149"
+			IsChecked="True"
+			Foreground="#FFFFFFFF" Visibility="Hidden" />
+        <RadioButton
+			Name="OptionNeosClassroom"
+			Content="Neos Classroom"
+			HorizontalAlignment="Left"
+			Margin="202,178,0,0"
+			VerticalAlignment="Top"
+			FontSize="16"
+			Grid.ColumnSpan="2"
+			Width="149"
+			Foreground="#FFFFFFFF" Visibility="Hidden" />
+        <Button
+            x:Name="Launcher_Button"
+            Content="Open NeosLauncher"
+            Margin="95,218,0,0"
+            VerticalAlignment="Top"
+            Height="29"
+            FontSize="13"
+            HorizontalAlignment="Left"
+            Width="134"
+            Grid.Column="1"
+            Click="LaunchScreen_Button_Click" Grid.ColumnSpan="2" />
+    </Grid>
+</Window>
